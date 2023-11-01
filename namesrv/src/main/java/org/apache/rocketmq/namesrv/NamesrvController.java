@@ -80,6 +80,7 @@ public class NamesrvController {
     private ExecutorService clientRequestExecutor;
 
     private BlockingQueue<Runnable> defaultThreadPoolQueue;
+    //处理客户端连接任务
     private BlockingQueue<Runnable> clientRequestThreadPoolQueue;
 
     private final Configuration configuration;
@@ -94,6 +95,7 @@ public class NamesrvController {
         this.nettyServerConfig = nettyServerConfig;
         this.nettyClientConfig = nettyClientConfig;
         this.kvConfigManager = new KVConfigManager(this);
+        //broker断联处理
         this.brokerHousekeepingService = new BrokerHousekeepingService(this);
         this.routeInfoManager = new RouteInfoManager(namesrvConfig, this);
         this.configuration = new Configuration(LOGGER, this.namesrvConfig, this.nettyServerConfig);
@@ -101,12 +103,18 @@ public class NamesrvController {
     }
 
     public boolean initialize() {
+        //加载配置
         loadConfig();
+        //初始化netty服务端和客户端
         initiateNetworkComponents();
+        //创建处理获取topic信息的请求线程池和其他任务线程池
         initiateThreadExecutors();
+        //注册处理任务的线程池到服务端中
         registerProcessor();
+        //开启定时任务
         startScheduleService();
         initiateSslContext();
+        //服务端注册处理请求前后的钩子
         initiateRpcHooks();
         return true;
     }
@@ -116,12 +124,13 @@ public class NamesrvController {
     }
 
     private void startScheduleService() {
+        //扫描失活broker
         this.scanExecutorService.scheduleAtFixedRate(NamesrvController.this.routeInfoManager::scanNotActiveBroker,
             5, this.namesrvConfig.getScanNotActiveBrokerInterval(), TimeUnit.MILLISECONDS);
-
+        //定时打印配置
         this.scheduledExecutorService.scheduleAtFixedRate(NamesrvController.this.kvConfigManager::printAllPeriodically,
             1, 10, TimeUnit.MINUTES);
-
+        //打印待处理的任务数和任务延迟处理的时间
         this.scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
                 NamesrvController.this.printWaterMark();

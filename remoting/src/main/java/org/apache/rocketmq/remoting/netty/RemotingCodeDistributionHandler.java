@@ -50,6 +50,7 @@ public class RemotingCodeDistributionHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("RemotingCodeDistributionHandler---------------channelRead");
         if (msg instanceof RemotingCommand) {
             RemotingCommand cmd = (RemotingCommand) msg;
             countInbound(cmd.getCode());

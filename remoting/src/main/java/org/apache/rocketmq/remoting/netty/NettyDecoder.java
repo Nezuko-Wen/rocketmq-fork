@@ -37,6 +37,7 @@ public class NettyDecoder extends LengthFieldBasedFrameDecoder {
 
     @Override
     public Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+        System.out.println("NettyDecoder---------------decode");
         ByteBuf frame = null;
         Stopwatch timer = Stopwatch.createStarted();
         try {

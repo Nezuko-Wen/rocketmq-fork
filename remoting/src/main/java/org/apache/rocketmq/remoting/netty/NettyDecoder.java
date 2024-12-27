@@ -25,22 +25,30 @@ import org.apache.rocketmq.logging.org.slf4j.LoggerFactory;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
+/**
+ * 粘包拆包问题的解码器
+ */
 public class NettyDecoder extends LengthFieldBasedFrameDecoder {
     private static final Logger log = LoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
 
     private static final int FRAME_MAX_LENGTH =
-        Integer.parseInt(System.getProperty("com.rocketmq.remoting.frameMaxLength", "16777216"));
+            Integer.parseInt(System.getProperty("com.rocketmq.remoting.frameMaxLength", "16777216"));
 
     public NettyDecoder() {
-        super(FRAME_MAX_LENGTH, 0, 4, 0, 4);
+        super(FRAME_MAX_LENGTH,/*栈帧最大长度*/
+                0,/*长度字段的偏移量，表示长度字段的起始位置*/
+                4,/*长度字段所占字节数*/
+                0,/*长度字段所表示的长度与栈帧实际长度的差异值*/
+                4/*指定需要跳过的字节数，即从帧中跳过的字节数，只将有效数据传给下一个处理器*/);
     }
 
     @Override
     public Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-        System.out.println("NettyDecoder---------------decode");
+        log.info("NettyDecoder---------------decode");
         ByteBuf frame = null;
         Stopwatch timer = Stopwatch.createStarted();
         try {
+            //使用netty的粘包拆包解码器获取实际数据
             frame = (ByteBuf) super.decode(ctx, in);
             if (null == frame) {
                 return null;

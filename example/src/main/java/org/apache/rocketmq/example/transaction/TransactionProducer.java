@@ -49,6 +49,7 @@ public class TransactionProducer {
             return thread;
         });
 
+        //负责处理事务消息的回查
         producer.setExecutorService(executorService);
         producer.setTransactionListener(transactionListener);
         producer.start();

@@ -1,0 +1,8 @@
+{
+  "namesrvAddr": "127.0.0.1:9876",
+  "proxyMode": "cluster",
+  "rpcAddress": "127.0.0.1:8081",
+  "consumeThreadNums": 20,
+  "pullBatchSize": 32,
+  "maxCachedMessageSizeInMiB": 512
+}

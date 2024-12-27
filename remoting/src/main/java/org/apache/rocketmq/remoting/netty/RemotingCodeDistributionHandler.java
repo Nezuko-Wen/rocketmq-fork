@@ -25,10 +25,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.LongAdder;
+
+import org.apache.rocketmq.logging.org.slf4j.Logger;
+import org.apache.rocketmq.logging.org.slf4j.LoggerFactory;
+import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 @ChannelHandler.Sharable
 public class RemotingCodeDistributionHandler extends ChannelDuplexHandler {
+    private static final Logger log = LoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
 
     private final ConcurrentMap<Integer, LongAdder> inboundDistribution;
     private final ConcurrentMap<Integer, LongAdder> outboundDistribution;
@@ -50,7 +55,7 @@ public class RemotingCodeDistributionHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("RemotingCodeDistributionHandler---------------channelRead");
+        log.info("RemotingCodeDistributionHandler---------------channelRead");
         if (msg instanceof RemotingCommand) {
             RemotingCommand cmd = (RemotingCommand) msg;
             countInbound(cmd.getCode());

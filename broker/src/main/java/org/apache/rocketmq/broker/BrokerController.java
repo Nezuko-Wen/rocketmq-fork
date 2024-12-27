@@ -1421,7 +1421,7 @@ public class BrokerController {
     }
 
     public void shutdown() {
-
+        System.out.println("broker-shutdown---------");
         shutdownBasicService();
 
         for (ScheduledFuture<?> scheduledFuture : scheduledFutures) {
